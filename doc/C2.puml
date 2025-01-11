@@ -1,0 +1,42 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+' uncomment the following line and comment the first to use locally
+' !include C4_Container.puml
+
+' LAYOUT_TOP_DOWN()
+' LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+title Диаграмма контейнеров для системы лояльности на предприятии
+
+Person(client, Клиент, "Покупатель")
+Person(manager, Менеджер, "Продавец")
+Person(admin, Администратор, "")
+
+System_Boundary(app, "Сервер приложений / MS Windows Server") {
+    Container(soft_1c, "Сервер 1С")
+    Container(soft_db, "СУБД")
+    Container(soft_web, "Web-сервере IIS/Apache")
+    System_Ext(soft_offset, "Offset Explorer")
+}
+
+System_Boundary(docker, "Брокер сообщений / Linux") {
+    System_Ext(soft_kafka, "Kafka")
+    System_Ext(soft_zoo, "Zookeeper")
+}
+
+Container(term, "Сервер терминалов", "MS Windows Server")
+
+Rel(client, manager, "Заказ", "Обращение клиента")
+Rel(manager, term, "Документ", "Оформление заказа")
+Rel(term, soft_1c, "Сеанс", "TCP")
+Rel(soft_1c, soft_db, "Соединение", "TCP")
+Rel(soft_1c, soft_web, "REST API", "HTTP")
+Rel(term, soft_web, "Сеанс", "HTTP")
+
+Rel(admin, term, "Подключение", "Настройка и контроль")
+Rel(term, soft_offset, "Сеанс", "Оформление заказа")
+Rel(soft_offset, soft_zoo, "Соединение", "Балансировка нагрузки")
+Rel(soft_zoo, soft_kafka, "Соединение", "Обмен")
+
+@enduml

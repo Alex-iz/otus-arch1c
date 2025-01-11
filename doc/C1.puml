@@ -1,0 +1,21 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+' uncomment the following line and comment the first to use locally
+' !include C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Диаграмма контекста для системы лояльности предприятия
+
+Person(client, "Клиент", "Покупатель")
+System(erp_system, "ERP", "Основная система")
+System(bonus_system, "Система лояльности", "Учет бонусов")
+
+System_Ext(edi_system, "Брокер сообщений", "Обмен справочниками и электронными документами")
+
+Rel(client, erp_system, "Заказ")
+Rel_Neighbor(erp_system, bonus_system, "Списание бонусов")
+Rel_Neighbor(bonus_system, erp_system, "Баланс бонусов")
+Rel(erp_system, edi_system, "Электронные документы")
+Rel_Neighbor(edi_system, bonus_system, "Электронные документы")
+@enduml
